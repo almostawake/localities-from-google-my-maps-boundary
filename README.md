@@ -117,5 +117,5 @@ The script reads **myMap.kml**, then:
 1. **Places Aggregate API** — one call: "localities inside this polygon?" → list of place IDs
 2. **Places API (Place Details)** — one call per place ID: name + coordinates
 3. **Geocoding API** — one call: "where is Bowral?" → origin coordinates
-4. **Distance Matrix API** — batched calls: driving distance + time from Bowral to each locality
+4. **Distance Matrix API** — batched calls: driving distances and drive time from Bowral to each locality
 5. write **myMap.xlsx** (Locality | Driving distance | Driving duration mins)

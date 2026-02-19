@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Fetch locality names inside the KML polygon using Google Places Aggregate API,
-then resolve names + locations via Place Details, then driving distance/duration from Bowral.
+then resolve names + locations via Place Details, then driving distances and drive time from Bowral.
 Input: myMap.kml. Output: myMap.xlsx (Locality, Driving distance, Driving duration in minutes).
 """
 from __future__ import annotations
@@ -169,10 +169,10 @@ def main() -> None:
     print("Geocoding API: resolving origin (Bowral)...")
     origin_ll = geocode_address(ORIGIN)
     if not origin_ll:
-        print("Geocoding API: could not resolve Bowral. Skipping distance matrix.")
+        print("Geocoding API: could not resolve Bowral. Skipping distances and drive time.")
     else:
         origin_lat, origin_lng = origin_ll
-        print("Distance Matrix API: fetching driving distances from Bowral...")
+        print("Distance Matrix API: fetching driving distances and drive time from Bowral...")
         results: list[tuple[str, str, int | None]] = []
         for i in range(0, len(localities), BATCH_SIZE):
             batch = localities[i : i + BATCH_SIZE]
