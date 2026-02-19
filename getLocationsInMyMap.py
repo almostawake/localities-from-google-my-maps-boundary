@@ -119,6 +119,7 @@ def main() -> None:
     }
 
     print("Calling Places Aggregate API (localities in polygon)...")
+    print("This can take a minute or so, depending on how big your map boundary is.")
     r = requests.post(
         AGGREGATE_URL,
         headers={"X-Goog-Api-Key": GOOGLE_API_KEY, "Content-Type": "application/json"},
