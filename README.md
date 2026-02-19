@@ -119,5 +119,3 @@ The script reads **myMap.kml**, then:
 3. **Geocoding API** — one call: "where is Bowral?" → origin coordinates
 4. **Distance Matrix API** — batched calls: driving distance + time from Bowral to each locality
 5. write **myMap.xlsx** (Locality | Driving distance | Driving duration mins)
-
-**NOTE** The first call takes a minute or so for my example .. this is normal

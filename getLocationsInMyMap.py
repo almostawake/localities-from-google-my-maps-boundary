@@ -119,7 +119,6 @@ def main() -> None:
     }
 
     print("Calling Places Aggregate API (localities in polygon)...")
-    print("This can take a minute or so, depending on how big your map boundary is.")
     r = requests.post(
         AGGREGATE_URL,
         headers={"X-Goog-Api-Key": GOOGLE_API_KEY, "Content-Type": "application/json"},
@@ -131,12 +130,13 @@ def main() -> None:
 
     place_resources = data.get("placeInsights") or []
     if not place_resources:
-        print("No place insights returned. Response:", data)
+        print("Places Aggregate API: no place insights returned. Response:", data)
         return
     place_ids = [p.get("place", "").replace("places/", "") for p in place_resources if p.get("place")]
     place_ids = [pid for pid in place_ids if pid]
-    print(f"Got {len(place_ids)} place IDs. Resolving names and locations...")
+    print(f"Places Aggregate API: found {len(place_ids)} places.")
 
+    print("Places API (Place Details): resolving names and locations...")
     localities: list[tuple[str, float, float]] = []  # (name, lat, lng)
     for i, place_id in enumerate(place_ids):
         time.sleep(DELAY_PLACE_DETAILS)
@@ -161,18 +161,18 @@ def main() -> None:
             localities.append((name, 0.0, 0.0))
         else:
             localities.append((name, float(lat), float(lng)))
-        if (i + 1) % 20 == 0:
-            print(f"  {i + 1}/{len(place_ids)}")
+        print(f"\rPlaces API (Place Details): {i + 1}/{len(place_ids)}", end="", flush=True)
+    print()
 
     localities.sort(key=lambda x: x[0].lower())
 
-    print("Geocoding origin (Bowral)...")
+    print("Geocoding API: resolving origin (Bowral)...")
     origin_ll = geocode_address(ORIGIN)
     if not origin_ll:
-        print("Could not geocode Bowral. Skipping distance matrix.")
+        print("Geocoding API: could not resolve Bowral. Skipping distance matrix.")
     else:
         origin_lat, origin_lng = origin_ll
-        print("Fetching driving distances from Bowral...")
+        print("Distance Matrix API: fetching driving distances from Bowral...")
         results: list[tuple[str, str, int | None]] = []
         for i in range(0, len(localities), BATCH_SIZE):
             batch = localities[i : i + BATCH_SIZE]
@@ -181,7 +181,7 @@ def main() -> None:
             for (name, _, _), (dist, mins) in zip(batch, dist_mins):
                 results.append((name, dist, mins))
             time.sleep(0.2)
-            print(f"  Batch {i // BATCH_SIZE + 1}/{(len(localities) + BATCH_SIZE - 1) // BATCH_SIZE} done.")
+            print(f"  Distance Matrix API: batch {i // BATCH_SIZE + 1}/{(len(localities) + BATCH_SIZE - 1) // BATCH_SIZE} done.")
 
         wb = Workbook()
         ws = wb.active
